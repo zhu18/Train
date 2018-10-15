@@ -1,12 +1,12 @@
-
 # 前端基础知识
 
-## 前端三元素
+http://www.cnblogs.com/star91/p/5659134.html
+##前端三元素
 * html：名词，当前版本html 5.0
 * css：形容词，当前版本css 3.0
 * JavaScript：动词，当前版本ECMAScript 2015
 
-### 一、html5主要新特性
+### 一、[html5主要新特性](http://www.cnblogs.com/vicky1018/p/7705223.html)
 1. 语义化标签
 2. 增强型表单
 3. 视频和音频
@@ -15,7 +15,7 @@
 6. Web Worker
 7. Web Socket
 
-### 二、css3主要新特性
+### 二、[css3主要新特性](https://segmentfault.com/a/1190000010780991)
 1. 颜色：新增RGBA，HSLA模式
 2. 阴影（text-shadow、box-shadow）
 4. 盒子模型：box-sizing
