@@ -1,7 +1,7 @@
 # 前端基础知识
 
-http://www.cnblogs.com/star91/p/5659134.html
-##前端三元素
+
+## 前端三元素
 * html：名词，当前版本html 5.0
 * css：形容词，当前版本css 3.0
 * JavaScript：动词，当前版本ECMAScript 2015
