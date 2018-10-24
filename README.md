@@ -16,3 +16,6 @@
     -   svg 2D图形
     -   canvas 2D图形
     -   webgl 3D图形
+-   canvas
+-   zrender.js
+-   p5.js
