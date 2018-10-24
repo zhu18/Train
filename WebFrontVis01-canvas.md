@@ -61,7 +61,7 @@ Processing是关于数字艺术的编程语言，支持跨平台，语言本身�
 什么是Processing.js
 为了能让Processing的代码能在Web上工作，John Resig开发了Processing.js（这是继Jquery之后，他的第二个力作）
 
-[视频介绍](hello.p5js.org)
+[视频介绍](hello.p5js.org)
 
 [特效演示01](http://www.jq22.com/code1630)
 
