@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/gsap/latest/TweenMax.min.js"></script>
+    <style>
+        .box {
+            width: 200px;
+            height: 50px;
+            background: #f93;
+            margin: 2px;
+        }
+
+        #wrap {
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrap">
+        <div id="b1" class="box"></div>
+
+        <div id="b2" class="box"></div>
+
+        <div id="b3" class="box"></div>
+
+    </div>
+
+    <script>
+        //初始化默认加载动画
+        //var tw = new TweenMax('.b1',2,{x:800})
+
+        //TweenMax.to('.b2',2,{x:400})
+
+        //https://greensock.com/ease-visualizer
+        new TweenMax('.b1', 2, {
+            x: 500,
+        delay: 3,
+            esae:Power2.easeOut
+        });
+
+        // new TweenMax('.b2', 3, {
+        //     x: 500,
+        //     repeat:2,
+        //     yoyo:true
+        // });
+        // TweenMax.set("#wrap", { perspective: 400 });
+
+        // TweenMax.from('.box', 5, {
+        //     //x:500,
+        //     opacity: 0,
+        //     // scale:2, 
+        //     rotationX: 90,
+        //     //skewX:90,
+        //     //rotation:360,
+        //     //transformOrigin:"0% 50% -50"
+        //});
+
+    //     var number={v:0}
+    //    var tween = TweenMax.to(number,2,{
+    //         v:100,
+    //         onUpdate:function(v){
+    //         document.getElementById('b2').innerText = number.v.toFixed(2);
+    //     }
+    //})
+
+    
+    </script>
+</body>
+
+</html>
