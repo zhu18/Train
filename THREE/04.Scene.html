@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>box</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {
+			font-family: Monospace;
+			background-color: #000;
+			color: #fff;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		#info {
+			color: #fff;
+			position: absolute;
+			top: 10px;
+			width: 100%;
+			text-align: center;
+			z-index: 100;
+			display: block;
+		}
+
+		#info a,
+		.button {
+			color: #f00;
+			font-weight: bold;
+			text-decoration: underline;
+			cursor: pointer
+		}
+	</style>
+</head>
+
+<body>
+	<div id="info">
+	</div>
+
+	<script src="js/three.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<script src="js/EquirectangularToCubeGenerator.js"></script>
+	<script>
+		var clock = new THREE.Clock();
+		//创建场景
+		var scene = new THREE.Scene();
+		scene.fog = new THREE.FogExp2(0x000000, 0.0005);
+
+		//创建相机（视野，显示口的宽高比，近裁剪面，远裁剪面）
+		var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+		//创建渲染器
+		var renderer = new THREE.WebGLRenderer({
+			antialias: true
+		});
+		camera.position.z = -10;
+		camera.position.y = 8;
+		camera.position.x = -12;
+
+		
+		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.shadowMap.enabled = true;
+		renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+		renderer.gammaInput = true;
+		renderer.gammaOutput = true;
+		document.body.appendChild(renderer.domElement);
+		//控制器
+		var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+		var textureLoader = new THREE.TextureLoader();
+			textureLoader.load( 'img/timg3.jpg', function ( texture ) {
+				texture.mapping = THREE.UVMapping;
+				init( texture );
+				render();
+			} );
+
+		function init(texture){
+			initLight();
+			initSky(texture);
+			intFloor();
+		}
+		function initLight(){
+			//灯光
+			var light = new THREE.AmbientLight(0xffffff, .5); //环境光 颜色，强度:正常1 可调整
+				scene.add(light);
+				var directionalLight = new THREE.DirectionalLight(0xff9900, .5);
+				scene.add(directionalLight);
+				var directionalLight = new THREE.DirectionalLight(0x0000ff, 1); //平行光 
+				scene.add(directionalLight);
+				var directionalLight = new THREE.DirectionalLight(0x00ffff, 1);
+				scene.add(directionalLight);
+
+				var helper = new THREE.DirectionalLightHelper(directionalLight, 15);
+				scene.add(helper);
+				directionalLight.position.set(0, 0, 100)
+				directionalLight.target.position.set(0, 100, 0)
+				//辅助
+				var axesHelper = new THREE.AxesHelper(5);
+				scene.add(axesHelper);
+		}
+	
+
+
+		function initSky(texture) {
+			//天空盒子
+			
+			texture.wrapS = texture.wrapT = THREE.RepeatWrapping
+			texture.repeat.set(50, 50);
+			var options = {
+				resolution: 1024,
+				generateMipmaps: true,
+				minFilter: THREE.LinearMipMapLinearFilter,
+				magFilter: THREE.LinearFilter
+			};
+			scene.background = new THREE.CubemapGenerator(renderer).fromEquirectangular(texture, options);
+			
+			cubeCamera1 = new THREE.CubeCamera(1, 1000, 256);
+			cubeCamera1.renderTarget.texture.generateMipmaps = true;
+			cubeCamera1.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+			scene.add(cubeCamera1);
+			// cubeCamera2 = new THREE.CubeCamera(1, 1000, 256);
+			// cubeCamera2.renderTarget.texture.generateMipmaps = true;
+			// cubeCamera2.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+			// scene.add(cubeCamera2);
+			// material = new THREE.MeshBasicMaterial( {
+			// 	color:0xffffff,
+			// 		envMap:texture,
+			// 		side: THREE.DoubleSide,
+			// 	} );
+			//圆形顶
+			// var geometry1 = new THREE.SphereBufferGeometry(10, 32, 32);
+			// var texture1 = new THREE.TextureLoader().load("img/timg3.jpg");
+			// texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping
+			// texture1.repeat.set(10, 10);
+			//  material = new THREE.MeshPhongMaterial({
+			// 	color: 0xffffff,
+			// 	side: THREE.DoubleSide,
+			// 	map: texture1,
+			// 	//wireframe:true,
+			// });
+			// var mesh = new THREE.Mesh(geometry1,material)
+			// 	scene.add(mesh)
+		}
+
+
+
+		//圆形地板
+		function intFloor() {
+			//圆形地板 贴图
+			var texture = new THREE.TextureLoader().load("img/timg4.jpeg");
+			texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat.set(4, 4); //平铺次数 横向平铺，纵向平铺
+			//圆形地板
+			var plangeometry = new THREE.CylinderBufferGeometry(100, 100, 2, 32); //上半径,下半径，高度，段数
+			var material = new THREE.MeshPhongMaterial({
+				color: 0xffffff,
+				shininess: 1000, // 光洁度 越高越光滑
+				//map:cubeTexture,//贴图
+				envMap: texture,
+				refractionRatio: 0.95,
+				transparent: true, //开启透明
+				opacity: .8, //透明度
+				side: THREE.DoubleSide
+			});
+			var circle = new THREE.Mesh(plangeometry, material);
+			//circle.rotation.set(Math.PI / 2, 0, 0)
+			circle.receiveShadow = true;
+			circle.castShadow = true;
+			scene.add(circle);
+		}
+
+		
+
+		//console.log(directionalLight.position)
+		let x = 0,
+			time;
+		var render = function () {
+			requestAnimationFrame(render);
+			time = new Date().getTime();
+			// group.rotation.y += 0.01;
+			// group.scale.set(2,.5,.5)
+			x += 0.1
+
+			// var time = clock.getElapsedTime() * 10;
+			// var position = plangeometry.attributes.position;
+			// 	for ( var i = 0; i < position.count; i ++ ) {
+			// 		var y = 35 * Math.sin( i / 5 + ( time + i ) / 7 );
+			// 		position.setY( i, y );
+			// 	}
+			// position.needsUpdate = true;
+			// material.envMap = cubeCamera1.renderTarget.texture;
+			// 		cubeCamera1.update( renderer, scene );
+			controls.update();
+
+			renderer.render(scene, camera);
+
+		};
+
+		
+	</script>
+
+</body>
+
+</html>

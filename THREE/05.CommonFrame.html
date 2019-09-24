@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>3d公共框架</title>
+	<style>
+		* {
+			padding: 0;
+			margin: 0
+		}
+	</style>
+	<script src="js/three.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<script src="js/dat.gui.min.js"></script>
+	<script src="js/stats.min.js"></script>
+
+</head>
+
+<body>
+	<script>
+		//公共全局对象
+		var camera, scene, renderer, controls, stats
+		var gui, gui_opt = {}
+		init()
+
+		function init() {
+			initGui();
+			initBase();
+			initLight();
+			initMesh();
+			animate();
+		}
+
+		function initGui() {
+			//调试工具
+			gui = new dat.GUI();
+			gui_opt = {
+				debug: true,
+				print() {
+					console.log(gui_opt)
+				}
+			}
+			gui.add(gui_opt, 'debug');
+			gui.add(gui_opt, 'print');
+
+			// gui_scene.add( params, 'autoRotate' );
+			// gui_scene.add( params, 'gemColor', [ 'Blue', 'Green', 'Red', 'White', 'Black' ] );
+			gui.open();
+		}
+
+		function initBase() {
+			//创建场景
+			scene = new THREE.Scene();
+			//雾化
+			//scene.fog = new THREE.FogExp2(0x000000, 0.05);
+			//创建相机（视野，显示口的宽高比，近裁剪面，远裁剪面）
+			camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+			//创建渲染器
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			document.body.appendChild(renderer.domElement);
+			//控制器
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			//性能
+			stats = new Stats();
+			document.body.appendChild(stats.dom);
+
+			//gui
+			var gui_scene = gui.addFolder('scene');
+			gui_opt.scene = {
+				fogOpen: false,
+				fogColor: '#000000',
+				fogDensity: 0.00025
+			}
+
+			gui_scene.add(gui_opt.scene, 'fogOpen').onChange((v) => {
+				setFog();
+			})
+			gui_scene.addColor(gui_opt.scene, 'fogColor').onChange((v) => {
+				setFog();
+			});
+			gui_scene.add(gui_opt.scene, 'fogDensity', 0.00025, 0.1).onChange((v) => {
+				setFog();
+			});
+
+			camera.position.z = 15;
+			camera.position.y = 3;
+			camera.position.x = -2;
+		}
+
+		function setFog() {
+			scene.fog = gui_opt.scene.fogOpen ? 
+			new THREE.FogExp2(new THREE.Color(gui_opt.scene.fogColor ), gui_opt.scene.fogDensity) 
+			: null
+		}
+
+		function initLight() {
+			//灯光
+			var light = new THREE.AmbientLight(0x404040);
+			scene.add(light);
+			var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+			scene.add(directionalLight);
+
+			//辅助
+			var helper = new THREE.DirectionalLightHelper(directionalLight, 5);
+			scene.add(helper);
+			var size = 20;
+			var divisions = 30;
+			var gridHelper = new THREE.GridHelper(size, divisions);
+			scene.add(gridHelper);
+			var axesHelper = new THREE.AxesHelper(5);
+			scene.add(axesHelper);
+		}
+
+		function initMesh() {
+			//创建模型
+			var geometry = new THREE.BoxGeometry(1, 1, 1);
+			//创建材质
+			var material = new THREE.MeshLambertMaterial({
+				color: 0xff5555
+			});
+			//创建网格
+			var cube = new THREE.Mesh(geometry, material);
+			var group = new THREE.Group();
+			//
+			var tubeGeo = new THREE.OctahedronGeometry();
+			//创建材质
+			var tubeMate = new THREE.MeshLambertMaterial({
+				color: 0xffffff
+			});
+			var tubeMesh = new THREE.Mesh(tubeGeo, tubeMate);
+
+			tubeMesh.position.set(0, 1, -2);
+			group.position.set(2, 0, 0);
+
+			group.add(cube);
+			group.add(tubeMesh);
+			scene.add(group)
+		}
+
+		function animate() {
+			requestAnimationFrame(animate);
+			//stats.begin();
+			renderer.render(scene, camera);
+			//stats.end();
+			stats.update();
+			controls.update();
+		}
+	</script>
+</body>
+
+</html>
